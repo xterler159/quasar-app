@@ -1,5 +1,7 @@
 <template>
   <q-page class="flex flex-center" style="flex-direction: column">
+    <UsersPage />
+
     <img
       alt="Quasar logo"
       src="~assets/quasar-logo-vertical.svg"
@@ -15,9 +17,10 @@ import { defineComponent } from "vue";
 
 import AjaxBarDemo from "src/components/AjaxBarDemo.vue";
 import AvatarDemo from "src/components/AvatarDemo.vue";
+import UsersPage from "src/pages/UsersPage.vue";
 
 export default defineComponent({
   name: "IndexPage",
-  components: { AjaxBarDemo, AvatarDemo },
+  components: { AjaxBarDemo, AvatarDemo, UsersPage },
 });
 </script>
