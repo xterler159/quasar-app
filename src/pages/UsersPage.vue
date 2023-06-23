@@ -1,15 +1,17 @@
 <template>
   <div style="margin-bottom: 14px; margin-top: 14px">
     <q-table
+      v-if="!isDataLoading"
       bordered
       :columns="columns"
-      :rows="users ? users : []"
+      :rows="users"
       title="Users"
       v-model:selected="selected"
       @update:selected="handleSelection"
       selection="multiple"
       :pagination="pagination"
     />
+    <q-spinner size="3em" v-if="isDataLoading" />
   </div>
 </template>
 
@@ -22,6 +24,8 @@ export default defineComponent({
   setup() {
     const users = ref(null);
     const selected = ref([]);
+    const isDataLoading = ref(true);
+
     const pagination = ref({
       page: 1,
       sortBy: "desc",
@@ -44,6 +48,7 @@ export default defineComponent({
 
       if (req.status === 200) {
         users.value = req.data;
+        isDataLoading.value = false;
       }
     };
 
@@ -90,6 +95,7 @@ export default defineComponent({
       selected,
       handleSelection,
       pagination,
+      isDataLoading,
     };
   },
 });
