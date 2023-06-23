@@ -1,12 +1,14 @@
 <template>
   <div style="margin-bottom: 14px; margin-top: 14px">
     <q-table
+      bordered
       :columns="columns"
       :rows="users ? users : []"
       title="Users"
       v-model:selected="selected"
       @update:selected="handleSelection"
       selection="multiple"
+      :pagination="pagination"
     />
   </div>
 </template>
@@ -20,6 +22,14 @@ export default defineComponent({
   setup() {
     const users = ref(null);
     const selected = ref([]);
+    const pagination = ref({
+      page: 1,
+      sortBy: "desc",
+      descending: false,
+      page: 1,
+      rowsPerPage: 5,
+      // rowsNumber: 10, // this means we are managing pagination from the server
+    });
 
     const handleSelection = (selectedRows) => {
       if (selectedRows.length > 0) {
@@ -30,7 +40,7 @@ export default defineComponent({
     };
 
     const fetchUsers = async () => {
-      const req = await api.get("/users?_limit=5");
+      const req = await api.get("/users?_limit=10");
 
       if (req.status === 200) {
         users.value = req.data;
@@ -79,6 +89,7 @@ export default defineComponent({
       columns,
       selected,
       handleSelection,
+      pagination,
     };
   },
 });
