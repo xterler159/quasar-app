@@ -1,21 +1,36 @@
 <template>
-  <h1 class="text-h3">Users</h1>
-  <!-- <code>{{ JSON.stringify(users) }}</code> -->
-
-  <q-table :columns="columns" :rows="users ? users : []"></q-table>
+  <div style="margin-bottom: 14px; margin-top: 14px">
+    <q-table
+      :columns="columns"
+      :rows="users ? users : []"
+      title="Users"
+      v-model:selected="selected"
+      @update:selected="handleSelection"
+      selection="multiple"
+    />
+  </div>
 </template>
 
 <script>
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, onMounted } from "vue";
 import { api } from "src/boot/axios";
 
 export default defineComponent({
   name: "UsersPage",
   setup() {
     const users = ref(null);
+    const selected = ref([]);
+
+    const handleSelection = (selectedRows) => {
+      if (selectedRows.length > 0) {
+        selectedRows.forEach((row) => {
+          console.log("selected row:", row);
+        });
+      }
+    };
 
     const fetchUsers = async () => {
-      const req = await api.get("/users");
+      const req = await api.get("/users?_limit=5");
 
       if (req.status === 200) {
         users.value = req.data;
@@ -24,54 +39,47 @@ export default defineComponent({
 
     const columns = [
       {
-        name: "desc",
-        label: "Dessert (100g serving)",
+        name: "name",
         field: "name",
-        required: true,
+        label: "Name".toUpperCase(),
+        sortable: true,
         align: "left",
-        sortable: true,
-        sort: (a, b, rowA, rowB) => parseInt(a, 10) - parseInt(b, 10),
-        sortOrder: "ad", // or 'da'
-        format: (val, row) => `${val}%`,
-        style: "width: 500px",
-        classes: "my-special-class",
-        headerStyle: "width: 500px",
-        headerClasses: "my-special-class",
       },
       {
-        name: "calories",
-        label: "Calories",
-        field: "calories",
+        name: "username",
+        field: "username",
+        label: "Username".toUpperCase(),
         sortable: true,
-      },
-      { name: "name", label: "Name", field: "fat", sortable: true },
-      { name: "carbs", label: "Carbs (g)", field: "carbs" },
-      { name: "protein", label: "Protein (g)", field: "protein" },
-      { name: "sodium", label: "Sodium (mg)", field: "sodium" },
-      {
-        name: "calcium",
-        label: "Calcium (%)",
-        field: "calcium",
-        sortable: true,
-        sort: (a, b) => parseInt(a, 10) - parseInt(b, 10),
+        align: "left",
       },
       {
-        name: "iron",
-        label: "Iron (%)",
-        field: "iron",
+        name: "email",
+        field: "email",
+        label: "Email".toUpperCase(),
         sortable: true,
-        sort: (a, b) => parseInt(a, 10) - parseInt(b, 10),
+        align: "left",
+      },
+      {
+        name: "address",
+        field: (row) => {
+          return `${row.address.street}, ${row.address.suite}, ${row.address.city}, ${row.address.zipcode}`;
+        },
+        label: "Address".toUpperCase(),
+        align: "left",
       },
     ];
+
+    onMounted(() => {
+      fetchUsers();
+    });
 
     return {
       users,
       fetchUsers,
       columns,
+      selected,
+      handleSelection,
     };
-  },
-  mounted() {
-    this.fetchUsers();
   },
 });
 </script>
